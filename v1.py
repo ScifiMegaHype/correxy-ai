@@ -77,7 +77,7 @@ async def ac(message, mode: str=""): # autocorrect on/off
     save_config(config)
 
 @bot.command()
-async def correx(message, text: str | None = None): # single use correction, no need for consent
+async def correx(message, * ,text: str | None = None): # single use correction, no need for consent
     if not text:
         await message.reply("Please provide text to check.")
         return
