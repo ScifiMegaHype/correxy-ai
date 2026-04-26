@@ -1,6 +1,7 @@
 import os
 import requests
 import logging
+import re
 import discord
 from discord.ext import commands
 from dotenv import load_dotenv
@@ -24,7 +25,16 @@ intents.members = True
 
 bot = commands.Bot(command_prefix="!", intents=intents)
 
-def correct_text(text):
+
+def normalize(text: str) -> str:
+    # Lowercase
+    text = text.lower()
+    text = re.sub(r'[^a-z0-9\s]', '', text)
+    text = re.sub(r'\s+', ' ', text).strip()
+    
+    return text
+
+def correct_text(text: str) -> str:
     url = "https://api.languagetool.org/v2/check"
     data = {
         "text": text,
@@ -42,7 +52,7 @@ def correct_text(text):
 
     return corrected
 
-def correct_text_gemini(text):
+def correct_text_gemini(text: str) -> str:
     return gemini_correct(text)
 
 def process_corrections(message) -> tuple[str, bool]:
@@ -86,10 +96,11 @@ async def correx(message, * ,text: str | None = None): # single use correction, 
 
     corrected, used_gemini = process_corrections(temp_message)
 
-    if corrected != temp_message.content:
+    suggestion_used = normalize(corrected) != normalize(temp_message.content)
+    if suggestion_used:
         await message.reply(f"Suggested:\n{corrected}")
 
-    print(f"User: {message.author.id} | Used Gemini: {used_gemini}")
+    print(f"User: {message.author.id} | Used Gemini: {used_gemini} | Suggestor Used: {suggestion_used}")
 
 @bot.event
 async def on_message(message):
@@ -107,10 +118,11 @@ async def on_message(message):
         if has_consent:
             corrected, used_gemini = process_corrections(message)
 
-            if corrected != message.content:
+            suggestion_used = normalize(corrected) != normalize(message.content)
+            if suggestion_used:
                 await message.reply(f"Suggested:\n{corrected}")
 
-        print(f"User: {message.author.id} | Has Consent: {has_consent} | Used Gemini: {used_gemini}")
+        print(f"User: {message.author.id} | Has Consent: {has_consent} | Used Gemini: {used_gemini} | Suggestor Used: {suggestion_used}")
 
     await bot.process_commands(message)
 
