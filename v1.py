@@ -1,6 +1,4 @@
 import os
-from turtle import mode
-from turtle import mode
 import requests
 import logging
 import discord
