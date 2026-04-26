@@ -121,3 +121,5 @@ The bot is designed to support users---not correct them in an intrusive way.
 This bot provides AI-generated suggestions only. It will not
 automatically modify user messages unless explicitly configured 
 to do so by the user in future.
+
+<img src="https://github.com/ScifiMegaHype/correxy-ai/blob/main/version1.jpg" alt="Alt Text" width="1115" height="977">
